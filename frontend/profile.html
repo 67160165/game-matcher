@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>โปรไฟล์ - GameMatch</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="navbar" class="navbar"></div>
+
+  <div class="container">
+    <h1>โปรไฟล์ของฉัน</h1>
+
+    <div id="profile-alert"></div>
+
+    <div class="card">
+      <h3>ข้อมูลบัญชี</h3>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="p-username" disabled />
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="p-email" />
+      </div>
+      <button class="btn btn-primary" id="save-profile-btn">บันทึกการเปลี่ยนแปลง</button>
+      <button class="btn btn-danger" id="delete-account-btn" style="margin-left:8px;">ลบบัญชี</button>
+    </div>
+
+    <div class="card mt-24">
+      <h3>เปลี่ยนรหัสผ่าน</h3>
+      <div class="field">
+        <label>รหัสผ่านเดิม</label>
+        <input type="password" id="old-password" />
+      </div>
+      <div class="field">
+        <label>รหัสผ่านใหม่</label>
+        <input type="password" id="new-password" />
+      </div>
+      <button class="btn btn-outline" id="change-password-btn">เปลี่ยนรหัสผ่าน</button>
+    </div>
+
+    <div class="card mt-24">
+      <h3>ประวัติการทำแบบทดสอบ</h3>
+      <div id="history-list"><p class="subtitle">กำลังโหลด...</p></div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const user = getCurrentUser();
+    if (!user) window.location.href = '/login.html';
+
+    function showAlert(msg, type = 'success') {
+      document.getElementById('profile-alert').innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+    }
+
+    async function loadProfile() {
+      try {
+        const data = await apiRequest('/me', { auth: true });
+        document.getElementById('p-username').value = data.user.username;
+        document.getElementById('p-email').value = data.user.email;
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    }
+
+    async function loadHistory() {
+      const el = document.getElementById('history-list');
+      try {
+        const data = await apiRequest('/match/history', { auth: true });
+        if (!data.items.length) {
+          el.innerHTML = '<p class="subtitle">ยังไม่มีประวัติ ลองไปทำแบบทดสอบดูสิ!</p>';
+          return;
+        }
+        el.innerHTML = data.items.map((item) => `
+          <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <p class="subtitle" style="margin:0 0 6px;">${new Date(item.createdAt).toLocaleString('th-TH')}</p>
+            <div class="tag-row">
+              ${item.topGames.slice(0, 5).map((g) => `<span class="tag">${g.name}</span>`).join('')}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        el.innerHTML = `<p class="subtitle">โหลดประวัติไม่สำเร็จ</p>`;
+      }
+    }
+
+    document.getElementById('save-profile-btn').addEventListener('click', async () => {
+      try {
+        const email = document.getElementById('p-email').value.trim();
+        await apiRequest(`/users/${user.id}`, { method: 'PUT', auth: true, body: { email } });
+        showAlert('บันทึกข้อมูลเรียบร้อยแล้ว');
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    });
+
+    document.getElementById('change-password-btn').addEventListener('click', async () => {
+      try {
+        const oldPassword = document.getElementById('old-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        await apiRequest('/change-password', { method: 'POST', auth: true, body: { oldPassword, newPassword } });
+        showAlert('เปลี่ยนรหัสผ่านสำเร็จ');
+        document.getElementById('old-password').value = '';
+        document.getElementById('new-password').value = '';
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    });
+
+    document.getElementById('delete-account-btn').addEventListener('click', async () => {
+      if (!confirm('ยืนยันการลบบัญชี? การกระทำนี้ไม่สามารถย้อนกลับได้')) return;
+      try {
+        await apiRequest(`/users/${user.id}`, { method: 'DELETE', auth: true });
+        clearSession();
+        window.location.href = '/index.html';
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    });
+
+    loadProfile();
+    loadHistory();
+  </script>
+</body>
+</html>

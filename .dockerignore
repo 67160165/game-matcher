@@ -1,0 +1,5 @@
+node_modules
+npm-debug.log
+backend/data/*.json
+.git
+.env

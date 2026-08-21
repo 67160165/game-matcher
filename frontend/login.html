@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เข้าสู่ระบบ - GameMatch</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="navbar" class="navbar"></div>
+
+  <div class="container">
+    <div class="card card-narrow">
+      <h2>เข้าสู่ระบบ</h2>
+      <p class="subtitle">ยินดีต้อนรับกลับมา!</p>
+
+      <div id="alert-box"></div>
+
+      <form id="login-form">
+        <div class="field">
+          <label for="username">Username หรือ Email</label>
+          <input type="text" id="username" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="submit-btn">เข้าสู่ระบบ</button>
+      </form>
+
+      <p class="subtitle center mt-24">ยังไม่มีบัญชี? <a href="/register.html" style="color: var(--accent);">สมัครสมาชิก</a></p>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertBox = document.getElementById('alert-box');
+      const submitBtn = document.getElementById('submit-btn');
+      alertBox.innerHTML = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'กำลังเข้าสู่ระบบ...';
+
+      try {
+        const body = {
+          username: document.getElementById('username').value.trim(),
+          password: document.getElementById('password').value,
+        };
+        const data = await apiRequest('/login', { method: 'POST', body });
+        setSession(data.token, data.user);
+        window.location.href = '/quiz.html';
+      } catch (err) {
+        alertBox.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'เข้าสู่ระบบ';
+      }
+    });
+  </script>
+</body>
+</html>

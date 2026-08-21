@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    container_name: game-matcher
+    ports:
+      - "3001:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:-please-change-this-secret-in-production}
+    volumes:
+      # persist users.json / matches.json across container restarts
+      - game_matcher_data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  game_matcher_data:

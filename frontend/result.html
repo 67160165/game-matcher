@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ผลลัพธ์ - GameMatch</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="navbar" class="navbar"></div>
+
+  <div class="container">
+    <div class="flex-between">
+      <h1>เกมที่เข้ากับคุณ</h1>
+      <a href="/quiz.html" class="btn btn-outline">ทำแบบทดสอบใหม่</a>
+    </div>
+    <div id="result-list" class="game-list"></div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const raw = sessionStorage.getItem('gm_results');
+    const listEl = document.getElementById('result-list');
+    const results = raw ? JSON.parse(raw) : [];
+
+    if (!results.length) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <p>ยังไม่มีผลลัพธ์ กรุณาทำแบบทดสอบก่อน</p>
+          <a href="/quiz.html" class="btn btn-primary mt-24">ไปทำแบบทดสอบ</a>
+        </div>`;
+    } else {
+      listEl.innerHTML = results.map((r, i) => `
+        <div class="game-card">
+          <div class="game-rank">#${i + 1}</div>
+          <div class="game-info">
+            <div class="match-badge">ตรงกัน ${r.matchPercent}%</div>
+            <h3>${r.game.name} <span style="color:var(--text-dim); font-weight:400; font-size:0.8rem;">(${r.game.year})</span></h3>
+            <p>${r.game.description}</p>
+            <div class="tag-row">
+              ${r.game.genre.map((g) => `<span class="tag">${g}</span>`).join('')}
+              <span class="tag">${r.game.price}</span>
+              <span class="tag">${r.game.difficulty}</span>
+            </div>
+            ${r.reasons && r.reasons.length ? `
+              <ul class="reasons">
+                ${r.reasons.map((reason) => `<li>✓ ${reason}</li>`).join('')}
+              </ul>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

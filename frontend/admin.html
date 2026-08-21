@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin - GameMatch</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="navbar" class="navbar"></div>
+
+  <div class="container">
+    <h1>จัดการผู้ใช้ทั้งหมด</h1>
+    <div id="admin-alert"></div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>สมัครเมื่อ</th><th></th></tr>
+        </thead>
+        <tbody id="user-rows"></tbody>
+      </table>
+      <div class="pagination">
+        <button class="btn btn-outline" id="prev-btn">ก่อนหน้า</button>
+        <span id="page-info" class="subtitle"></span>
+        <button class="btn btn-outline" id="next-btn">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const user = getCurrentUser();
+    if (!user || user.role !== 'admin') window.location.href = '/index.html';
+
+    let page = 1;
+    const limit = 10;
+
+    async function loadUsers() {
+      try {
+        const data = await apiRequest(`/users?page=${page}&limit=${limit}`, { auth: true });
+        document.getElementById('user-rows').innerHTML = data.items.map((u) => `
+          <tr>
+            <td>${u.id}</td>
+            <td>${u.username}</td>
+            <td>${u.email}</td>
+            <td>${u.role}</td>
+            <td>${new Date(u.createdAt).toLocaleDateString('th-TH')}</td>
+            <td>${u.id !== user.id ? `<button class="btn btn-danger" style="padding:6px 12px;font-size:0.8rem;" data-id="${u.id}">ลบ</button>` : ''}</td>
+          </tr>
+        `).join('');
+        document.getElementById('page-info').textContent = `หน้า ${data.page} / ${data.totalPages || 1} (ทั้งหมด ${data.total} คน)`;
+
+        document.querySelectorAll('[data-id]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('ยืนยันการลบผู้ใช้นี้?')) return;
+            try {
+              await apiRequest(`/users/${btn.dataset.id}`, { method: 'DELETE', auth: true });
+              loadUsers();
+            } catch (err) {
+              document.getElementById('admin-alert').innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+            }
+          });
+        });
+      } catch (err) {
+        document.getElementById('admin-alert').innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+      }
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => { if (page > 1) { page -= 1; loadUsers(); } });
+    document.getElementById('next-btn').addEventListener('click', () => { page += 1; loadUsers(); });
+
+    loadUsers();
+  </script>
+</body>
+</html>

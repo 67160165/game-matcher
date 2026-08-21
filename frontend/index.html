@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GameMatch - หาเกมที่ใช่สำหรับคุณ</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="navbar" class="navbar"></div>
+
+  <div class="hero">
+    <h1>หาเกมที่ "ใช่" สำหรับคุณ</h1>
+    <p>ตอบคำถามสั้นๆ เกี่ยวกับสไตล์การเล่นของคุณ แล้วให้ระบบจับคู่เกมจากฐานข้อมูลที่คัดสรรมาให้ตรงใจที่สุด</p>
+    <a href="/quiz.html" class="btn btn-primary">เริ่มทำแบบทดสอบ</a>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h3>ระบบทำงานอย่างไร</h3>
+      <p class="subtitle">Rule-based Matching Engine</p>
+      <ol style="color: var(--text-dim); line-height: 1.8;">
+        <li>เลือกแนวเกม, อารมณ์การเล่น, รูปแบบผู้เล่น, แพลตฟอร์ม และอื่นๆ ที่คุณชอบ</li>
+        <li>ระบบให้คะแนนเกมแต่ละเกมในฐานข้อมูลตามความตรงกับคำตอบของคุณ (ถ่วงน้ำหนักตามหมวดหมู่)</li>
+        <li>รับผลลัพธ์เป็นรายชื่อเกม 10 อันดับที่เข้ากับคุณมากที่สุด พร้อมเหตุผลประกอบ</li>
+        <li>สมัครสมาชิกเพื่อบันทึกประวัติผลการจับคู่ของคุณไว้ดูย้อนหลังได้</li>
+      </ol>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+</body>
+</html>

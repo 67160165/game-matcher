@@ -1,0 +1,5 @@
+node_modules/
+backend/data/users.json
+backend/data/matches.json
+.env
+*.log
