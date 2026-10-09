@@ -8,6 +8,10 @@ const MATCHES_FILE = path.join(DATA_DIR, 'matches.json');
 const GAMES_FILE = path.join(SEED_DIR, 'games.json');
 
 function ensureFile(file, initial) {
+  const dir = path.dirname(file);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, JSON.stringify(initial, null, 2));
   }

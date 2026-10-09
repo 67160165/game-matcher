@@ -1,0 +1,37 @@
+name: CI / Build Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Verify server startup and syntax
+        run: |
+          node -c backend/server.js
+          node -c backend/routes/*.js
+          node -c backend/middleware/*.js
+          node -c backend/db/*.js
+
+      - name: Test Docker build
+        run: |
+          docker build -t game-matcher:test .

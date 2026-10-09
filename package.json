@@ -1,0 +1,17 @@
+{
+  "name": "game-matcher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rule-based game recommendation web application with Steam data integration",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "build": "cd backend && npm install",
+    "postinstall": "cd backend && npm install",
+    "seed:steam": "cd backend && npm run seed:steam"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

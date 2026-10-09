@@ -170,6 +170,52 @@ npm run seed:steam -- --count 100 # กำหนดจำนวนเกมเ�
 
 ---
 
+## ☁️ วิธีการ Deploy ขึ้น Cloud (ออนไลน์ฟรี เข้าผ่าน URL ได้จริง)
+
+โปรเจกต์นี้ได้รับการตั้งค่าไฟล์คอนฟิกสำหรับ Cloud Platform ไว้เรียบร้อยแล้ว (`render.yaml`, `Procfile`, `package.json`, `Dockerfile`) สามารถเลือก Deploy ได้ตามช่องทางที่สะดวก:
+
+### ทางเลือกที่ 1: Deploy บน Render.com (แนะนำ ฟรี 100%)
+
+Render ให้บริการ Web Service ฟรี และรองรับ Node.js หรือ Docker:
+
+1. สมัคร/ล็อกอินที่ **[Render.com](https://render.com/)** (แนะนำให้ล็อกอินด้วย GitHub)
+2. นำโค้ดขึ้น GitHub Repository ของคุณ (ถ้ายังไม่ได้ push):
+   ```bash
+   git add .
+   git commit -m "feat: add cloud deployment configurations"
+   git push origin main
+   ```
+3. **วิธีที่ 1.1 (ผ่าน Blueprint — ง่ายที่สุด 1-Click):**
+   - ในแดชบอร์ด Render คลิกปุ่ม **New +** ➔ เลือก **Blueprint**
+   - เลือก GitHub Repository `game-matcher`
+   - Render จะตรวจพบไฟล์ `render.yaml` อัตโนมัติ พร้อมตั้งค่า Build/Start command และสุ่ม `JWT_SECRET` ให้โดยอัตโนมัติ
+   - คลิก **Apply** รอระบบ Build ประมาณ 1-2 นาที คุณจะได้ URL เว็บไซต์จริงทันที!
+4. **วิธีที่ 1.2 (ผ่าน Web Service):**
+   - ในแดชบอร์ด Render คลิก **New +** ➔ **Web Service**
+   - เชื่อมต่อ Repository ของคุณ
+   - ตั้งค่า:
+     - **Runtime:** `Node`
+     - **Build Command:** `npm run build`
+     - **Start Command:** `npm start`
+     - **Environment Variables:**
+       - `NODE_ENV` = `production`
+       - `JWT_SECRET` = (ใส่คีย์สุ่มยาวๆ เช่น `my-secret-key-game-matcher-2026`)
+   - คลิก **Create Web Service**
+
+---
+
+### ทางเลือกที่ 2: Deploy บน Railway.app
+
+1. สมัคร/ล็อกอินที่ **[Railway.app](https://railway.app/)**
+2. คลิก **New Project** ➔ เลือก **Deploy from GitHub repo**
+3. เลือก repository `game-matcher`
+4. ไปที่แท็บ **Variables** ใน Service แล้วเพิ่ม:
+   - `JWT_SECRET` = (สุ่มสตริงลับของคุณ)
+   - `NODE_ENV` = `production`
+5. ไปที่แท็บ **Settings** ➔ คลิก **Generate Domain** ในหัวข้อ **Networking** เพื่อรับ URL สาธารณะ
+
+---
+
 ## 🔒 Security Best Practices
 - กำหนดค่า `JWT_SECRET` ใน `.env` ให้เป็นสตริงสุ่มที่มีความปลอดภัยสูง
 - รหัสผ่านผู้ใช้ผ่านการเข้ารหัสแบบแฮชด้วย `bcryptjs` (salt rounds: 10)
