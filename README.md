@@ -87,7 +87,38 @@ docker compose up --build
 - ปิดและลบข้อมูลทั้งหมด: `docker compose down -v`
 - ตั้งค่า JWT secret เอง: สร้างไฟล์ `.env` ที่ root โปรเจกต์แล้วใส่ `JWT_SECRET=your-long-random-string`
 
-## การทำงานของระบบจับคู่เกม (Matching Engine)
+## แหล่งข้อมูลเกม (Data Source): Steam
+
+ฐานข้อมูลเกมใน `backend/seed/games.json` ดึงมาจาก **Steam** จริงผ่าน 2 API สาธารณะ:
+
+- **[SteamSpy API](https://steamspy.com/api.php)** — รายชื่อเกมยอดนิยม, community tags, ราคา, จำนวนผู้เล่น
+- **[Steam Store API](https://store.steampowered.com/api/appdetails)** — genre, categories (single/co-op/pvp), คำอธิบายเกม, วันวางจำหน่าย
+
+สคริปต์ `backend/scripts/fetch-steam-games.js` จะดึงข้อมูลจริงจากทั้งสอง API แล้ว **map เป็น tag ที่ระบบใช้เอง** เพราะ Steam ไม่มี field `mood` / `difficulty` / `graphics style` โดยตรง — สคริปต์จะเดา (heuristic) จาก community tags เช่น
+- tag `"Relaxing"` → mood = Relaxing, tag `"Difficult"` / `"Souls-like"` → difficulty = Hard
+- tag `"Pixel Graphics"` → graphics = Pixel, tag `"Anime"` → graphics = Anime
+
+**ข้อจำกัด:** ข้อมูล mood/difficulty/graphics เป็นการเดาจาก tag ไม่ใช่ field ทางการของ Steam จึงอาจไม่แม่นยำ 100% และเนื่องจาก Steam เป็นแพลตฟอร์ม PC เท่านั้น เกมทุกเกมที่ดึงมาจะถูกกำหนด `platform: ["PC"]` เสมอ (ถ้าต้องการเพิ่มค่าย console ให้แก้ไฟล์ JSON เพิ่มเอง)
+
+### วิธีดึงข้อมูลจริงจาก Steam (regenerate seed file)
+
+ต้องมีอินเทอร์เน็ต (สคริปต์นี้รันไม่ได้ในแซนด์บ็อกซ์ที่ผมใช้สร้างโปรเจกต์ เพราะไม่มีเน็ตออก จึงยังไม่ได้รันจริงให้ — กรุณารันเองครั้งแรกในเครื่องคุณ):
+
+```bash
+cd backend
+npm install
+npm run seed:steam                # ดึง 60 เกม (default)
+npm run seed:steam -- --count 100 # หรือกำหนดจำนวนเอง
+```
+
+สคริปต์จะ:
+1. ดึงรายชื่อเกมยอดนิยมจาก SteamSpy (`top100in2weeks` + `top100forever`)
+2. ดึงรายละเอียดแต่ละเกมจาก SteamSpy + Steam Store API (หน่วงเวลาระหว่าง request เพื่อไม่ให้โดน rate limit)
+3. Map ข้อมูลเป็น schema ที่ระบบใช้ แล้วสำรองไฟล์เดิมไว้ที่ `games.backup.json` ก่อนเขียนทับ `games.json`
+
+ถ้าไม่รันสคริปต์นี้ ระบบจะใช้ไฟล์ `games.json` ตัวอย่าง 30 เกมที่มีอยู่แล้วในโปรเจกต์ (คัดเลือกและ tag ด้วยมือ ไม่ได้มาจาก Steam) เว็บยังใช้งานได้ปกติทันทีโดยไม่ต้องรันสคริปต์นี้ก่อน
+
+
 
 1. ผู้ใช้ตอบคำถาม 8 ข้อ: แนวเกม, อารมณ์การเล่น, รูปแบบผู้เล่น, แพลตฟอร์ม, ระยะเวลาเล่น, ความยาก, กราฟิก, ราคา
 2. สำหรับเกมแต่ละเกมในฐานข้อมูล ระบบจะให้คะแนนตามความตรงกันในแต่ละหมวด โดยถ่วงน้ำหนักไม่เท่ากัน (เช่น แนวเกม/อารมณ์ มีน้ำหนักสูงสุด)

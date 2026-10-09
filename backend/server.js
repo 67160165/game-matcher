@@ -19,7 +19,7 @@ app.use('/api', userRoutes);
 app.use('/api', gameRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date().toISOString() });
+  res.json({ status: 'ok', isSyncingSteam: false, time: new Date().toISOString() });
 });
 
 // ---- Serve frontend (static site) ----

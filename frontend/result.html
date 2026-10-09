@@ -5,14 +5,146 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ผลลัพธ์ - GameMatch</title>
 <link rel="stylesheet" href="/css/style.css" />
+<style>
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .result-card {
+    position: relative;
+    padding: 22px !important;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .result-card.top-one {
+    border: 1.5px solid rgba(250, 204, 21, 0.65) !important;
+    box-shadow: 0 12px 36px rgba(250, 204, 21, 0.14) !important;
+    background: linear-gradient(145deg, rgba(35, 30, 20, 0.82), rgba(22, 27, 46, 0.88)) !important;
+  }
+  .crown-ribbon {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #f59e0b, #eab308);
+    color: #111827;
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .game-cover-wrap {
+    width: 240px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .game-cover-wrap img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .result-card:hover .game-cover-wrap img {
+    transform: scale(1.05);
+  }
+  .match-meter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .match-bar-bg {
+    flex: 1;
+    max-width: 180px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .match-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  }
+  .tag-pill {
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .tag-free {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
+  }
+  .tag-paid {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #93c5fd;
+  }
+  .tag-theme {
+    background: rgba(236, 72, 153, 0.15);
+    border-color: rgba(236, 72, 153, 0.35);
+    color: #f9a8d4;
+  }
+  .reasons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    list-style: none;
+    padding-left: 0;
+  }
+  .reasons-grid li {
+    font-size: 0.82rem;
+    background: rgba(139, 92, 246, 0.12);
+    color: #ddd6fe;
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+  .btn-steam {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: all 0.18s ease;
+  }
+  .btn-steam:hover {
+    background: #1b2838;
+    border-color: #66c0f4;
+    color: #66c0f4;
+  }
+</style>
 </head>
 <body>
   <div id="navbar" class="navbar"></div>
 
   <div class="container">
-    <div class="flex-between">
-      <h1>เกมที่เข้ากับคุณ</h1>
-      <a href="/quiz.html" class="btn btn-outline">ทำแบบทดสอบใหม่</a>
+    <div class="result-header">
+      <div>
+        <h1 style="margin:0;">🎯 เกมที่เข้ากับคุณ</h1>
+        <p class="subtitle" style="margin:4px 0 0;">จัดอันดับจากความตรงกับคำตอบของคุณมากที่สุด</p>
+      </div>
+      <a href="/quiz.html" class="btn btn-primary">🔄 ทำแบบทดสอบใหม่</a>
     </div>
     <div id="result-list" class="game-list"></div>
   </div>
@@ -25,30 +157,72 @@
 
     if (!results.length) {
       listEl.innerHTML = `
-        <div class="empty-state">
-          <p>ยังไม่มีผลลัพธ์ กรุณาทำแบบทดสอบก่อน</p>
+        <div class="card empty-state" style="text-align:center; padding:48px 20px;">
+          <h3>ยังไม่มีผลลัพธ์ที่ตรงเงื่อนไข</h3>
+          <p class="subtitle">ลองปรับตัวเลือกในแบบทดสอบใหม่อีกครั้ง</p>
           <a href="/quiz.html" class="btn btn-primary mt-24">ไปทำแบบทดสอบ</a>
         </div>`;
     } else {
-      listEl.innerHTML = results.map((r, i) => `
-        <div class="game-card">
-          <div class="game-rank">#${i + 1}</div>
-          <div class="game-info">
-            <div class="match-badge">ตรงกัน ${r.matchPercent}%</div>
-            <h3>${r.game.name} <span style="color:var(--text-dim); font-weight:400; font-size:0.8rem;">(${r.game.year})</span></h3>
-            <p>${r.game.description}</p>
-            <div class="tag-row">
-              ${r.game.genre.map((g) => `<span class="tag">${g}</span>`).join('')}
-              <span class="tag">${r.game.price}</span>
-              <span class="tag">${r.game.difficulty}</span>
+      listEl.innerHTML = results.map((r, i) => {
+        const g = r.game || {};
+        const imgUrl = g.image || (g.appid ? `https://cdn.akamai.steamstatic.com/steam/apps/${g.appid}/header.jpg` : '');
+        const steamUrl = g.storeUrl || (g.appid ? `https://store.steampowered.com/app/${g.appid}` : '');
+        const isTopOne = i === 0;
+        const priceClass = g.price === 'Free' ? 'tag-free' : 'tag-paid';
+        const priceLabel = g.price === 'Free' ? '🎁 เล่นฟรี (Free)' : `💎 ${g.price || 'Paid'}`;
+
+        return `
+        <div class="game-card result-card ${isTopOne ? 'top-one' : ''}">
+          <div class="game-rank" style="${isTopOne ? 'color:#facc15; font-size:1.5rem;' : ''}">#${i + 1}</div>
+          <div class="game-info" style="width: 100%;">
+            ${isTopOne ? `<div class="crown-ribbon">👑 อันดับ 1 ที่เข้ากับคุณที่สุด</div>` : ''}
+            <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+              ${imgUrl ? `
+                <div class="game-cover-wrap">
+                  <img src="${imgUrl}" alt="${g.name}" onerror="this.parentElement.style.display='none'" />
+                </div>
+              ` : ''}
+              <div style="flex: 1; min-width: 240px;">
+                <div class="match-meter-row">
+                  <div class="match-badge">ตรงกัน ${r.matchPercent}%</div>
+                  <div class="match-bar-bg">
+                    <div class="match-bar-fill" style="width: ${r.matchPercent}%;"></div>
+                  </div>
+                </div>
+
+                <h3 style="margin: 6px 0 8px; font-size: 1.3rem;">
+                  ${g.name} 
+                  <span style="color:var(--text-dim); font-weight:400; font-size:0.85rem;">(${g.year || ''})</span>
+                </h3>
+
+                <p style="margin-bottom: 12px; line-height: 1.5;">${g.description || ''}</p>
+
+                <div class="tag-row" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                  ${(g.genre || []).map((tag) => `<span class="tag-pill">🎮 ${tag}</span>`).join('')}
+                  ${(g.theme || []).slice(0, 2).map((t) => `<span class="tag-pill tag-theme">✨ ${t}</span>`).join('')}
+                  ${(g.multiplayer || []).map((m) => `<span class="tag-pill">👥 ${m}</span>`).join('')}
+                  ${g.graphics ? `<span class="tag-pill">🎨 ${g.graphics}</span>` : ''}
+                  <span class="tag-pill ${priceClass}">${priceLabel}</span>
+                </div>
+
+                ${steamUrl ? `
+                  <div style="margin-top: 14px;">
+                    <a href="${steamUrl}" target="_blank" rel="noopener noreferrer" class="btn-steam">
+                      🛒 ดูบนร้านค้า Steam ↗
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
             </div>
+
             ${r.reasons && r.reasons.length ? `
-              <ul class="reasons">
+              <ul class="reasons-grid">
                 ${r.reasons.map((reason) => `<li>✓ ${reason}</li>`).join('')}
               </ul>` : ''}
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
   </script>
 </body>

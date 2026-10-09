@@ -269,3 +269,52 @@ th { color: var(--text-dim); font-weight: 600; }
 .center { text-align: center; }
 .mt-24 { margin-top: 24px; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+/* ================= อัปเกรดธีม Gaming Glassmorphism ================= */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Kanit', sans-serif !important;
+  background-color: #0b0d17 !important;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.14) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.06) 0%, transparent 50%) !important;
+  background-attachment: fixed !important;
+}
+
+.navbar {
+  backdrop-filter: blur(14px);
+  background: rgba(15, 18, 32, 0.78) !important;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.22) !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.card, .game-card {
+  background: rgba(22, 27, 46, 0.75) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  box-shadow: 0 16px 36px rgba(139, 92, 246, 0.18) !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #ec4899 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(236, 72, 153, 0.5) !important;
+}
